@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Screen 1.0</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #10131a;
+      color: white;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 18px;
+      text-align: center;
+      background: #191f2b;
+      border-bottom: 1px solid #30394b;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 25px;
+    }
+
+    header p {
+      color: #aab6ca;
+      margin-bottom: 0;
+    }
+
+    main {
+      width: 100%;
+      max-width: 950px;
+      margin: auto;
+      padding: 18px;
+      flex: 1;
+    }
+
+    .pantalla {
+      background: #05070b;
+      border: 2px solid #30394b;
+      border-radius: 14px;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: black;
+    }
+
+    .mensaje {
+      position: absolute;
+      text-align: center;
+      padding: 20px;
+      color: #aab6ca;
+      pointer-events: none;
+    }
+
+    .mensaje .icono {
+      font-size: 42px;
+      margin-bottom: 12px;
+    }
+
+    .controles {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 16px;
+    }
+
+    button {
+      padding: 12px 17px;
+      border: 1px solid #46536b;
+      border-radius: 9px;
+      color: white;
+      background: #222c3d;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .estado {
+      text-align: center;
+      margin-top: 18px;
+      padding: 13px;
+      border-radius: 9px;
+      background: #191f2b;
+      color: #c1cce0;
+    }
+
+    footer {
+      text-align: center;
+      color: #77849a;
+      padding: 15px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Mi Screen 1.0</h1>
+    <p>Tu pantalla, en una pantalla más grande.</p>
+  </header>
+
+  <main>
+    <div class="pantalla">
+      <video id="video" autoplay playsinline></video>
+
+      <div class="mensaje" id="mensaje">
+        <div class="icono">▣</div>
+        <strong>Esperando la transmisión</strong>
+        <p>Cuando conectemos el celular, aparecerá aquí.</p>
+      </div>
+    </div>
+
+    <div class="controles">
+      <button id="pantallaCompleta">Pantalla completa</button>
+      <button id="desconectar">Desconectar</button>
+    </div>
+
+    <div class="estado" id="estado">
+      Estado: esperando conexión
+    </div>
+  </main>
+
+  <footer>
+    Mi Screen 1.0 · Proyecto personal
+  </footer>
+
+  <script>
+    const video = document.getElementById("video");
+    const mensaje = document.getElementById("mensaje");
+    const estado = document.getElementById("estado");
+
+    window.miScreen = {
+      showStream(stream) {
+        video.srcObject = stream;
+        mensaje.style.display = "none";
+        estado.textContent = "Estado: transmisión activa";
+        video.play().catch(() => {});
+      },
+
+      disconnect() {
+        video.srcObject = null;
+        mensaje.style.display = "block";
+        estado.textContent = "Estado: esperando conexión";
+      }
+    };
+
+    document.getElementById("pantallaCompleta")
+      .addEventListener("click", async () => {
+        const pantalla = document.querySelector(".pantalla");
+
+        try {
+          if (!document.fullscreenElement) {
+            await pantalla.requestFullscreen();
+          } else {
+            await document.exitFullscreen();
+          }
+        } catch (error) {
+          estado.textContent =
+            "No se pudo activar la pantalla completa.";
+        }
+      });
+
+    document.getElementById("desconectar")
+      .addEventListener("click", () => {
+        window.miScreen.disconnect();
+      });
+  </script>
+</body>
+</html>
